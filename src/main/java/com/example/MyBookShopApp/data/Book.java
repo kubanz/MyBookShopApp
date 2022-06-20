@@ -3,19 +3,19 @@ package com.example.MyBookShopApp.data;
 public class Book {
 
     private Integer id;
-    private String author;
-    private String title;
-    private String priceOld;
     private String price;
+    private String priceOld;
+    private String title;
+    private int authorId;
 
     @Override
     public String toString() {
         return "Book{" +
                 "id=" + id +
-                ", author='" + author + '\'' +
+                ", price='" + price + '\'' +
+                ", priceOld='" + priceOld + '\'' +
                 ", title='" + title + '\'' +
-                ", priceOld=" + priceOld +
-                ", price=" + price +
+                ", authorId=" + authorId +
                 '}';
     }
 
@@ -27,20 +27,12 @@ public class Book {
         this.id = id;
     }
 
-    public String getAuthor() {
-        return author;
+    public String getPrice() {
+        return price;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public void setPrice(String price) {
+        this.price = price;
     }
 
     public String getPriceOld() {
@@ -51,11 +43,19 @@ public class Book {
         this.priceOld = priceOld;
     }
 
-    public String getPrice() {
-        return price;
+    public String getTitle() {
+        return title;
     }
 
-    public void setPrice(String price) {
-        this.price = price;
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public int getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(int authorId) {
+        this.authorId = authorId;
     }
 }
