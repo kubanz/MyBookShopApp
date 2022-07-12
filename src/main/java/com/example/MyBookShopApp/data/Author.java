@@ -1,18 +1,27 @@
 package com.example.MyBookShopApp.data;
 
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "authors")
 public class Author {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String first_name;
     private String last_name;
 
+    @OneToMany(mappedBy = "author")
+//    @JoinColumn(name = "author_id", referencedColumnName = "id")
+    private List<Book> booksList = new ArrayList<>();
+
+
     @Override
     public String toString() {
-        return "Author{" +
-                "id=" + id +
-                ", first_name='" + first_name + '\'' +
-                ", last_name='" + last_name + '\'' +
-                '}';
+        return first_name + ' ' + last_name ;
     }
 
     public Integer getId() {

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-1">
+        <createSequence sequenceName="authors_id_seq"/>
+    </changeSet>
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-2">
+        <createSequence sequenceName="authors_id_seq1"/>
+    </changeSet>
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-3">
+        <createSequence sequenceName="balance_transaction_id_seq"/>
+    </changeSet>
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-4">
+        <createSequence sequenceName="book2author_id_seq"/>
+    </changeSet>
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-5">
+        <createSequence sequenceName="book2genre_id_seq"/>
+    </changeSet>
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-6">
+        <createSequence sequenceName="book2user_id_seq"/>
+    </changeSet>
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-7">
+        <createSequence sequenceName="book2user_type_id_seq"/>
+    </changeSet>
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-8">
+        <createSequence sequenceName="book_file_id_seq"/>
+    </changeSet>
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-9">
+        <createSequence sequenceName="book_file_type_id_seq"/>
+    </changeSet>
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-10">
+        <createSequence sequenceName="book_review_id_seq"/>
+    </changeSet>
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-11">
+        <createSequence sequenceName="book_review_like_id_seq"/>
+    </changeSet>
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-12">
+        <createSequence sequenceName="books_id_seq"/>
+    </changeSet>
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-13">
+        <createSequence sequenceName="document_id_seq"/>
+    </changeSet>
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-14">
+        <createSequence sequenceName="faq_id_seq"/>
+    </changeSet>
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-15">
+        <createSequence sequenceName="file_download_id_seq"/>
+    </changeSet>
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-16">
+        <createSequence sequenceName="genre_id_seq"/>
+    </changeSet>
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-17">
+        <createSequence sequenceName="message_id_seq"/>
+    </changeSet>
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-18">
+        <createSequence sequenceName="user_contact_id_seq"/>
+    </changeSet>
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-19">
+        <createSequence sequenceName="users_id_seq"/>
+    </changeSet>
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-20">
+        <createTable tableName="authors">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true" primaryKeyName="authors_pkey"/>
+            </column>
+            <column name="first_name" type="VARCHAR(255)"/>
+            <column name="last_name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="kzamirbekov (generated)" id="1657597329337-21">
+        <createTable tableName="books">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true" primaryKeyName="books_pkey"/>
+            </column>
+            <column name="author_id" type="INT"/>
+            <column name="price" type="VARCHAR(255)"/>
+            <column name="price_old" type="VARCHAR(255)"/>
+            <column name="title" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
