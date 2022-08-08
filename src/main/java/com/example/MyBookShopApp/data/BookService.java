@@ -2,9 +2,17 @@ package com.example.MyBookShopApp.data;
 
 import com.example.MyBookShopApp.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -20,38 +28,59 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-    /*private JdbcTemplate jdbcTemplate;
+    //NEW BOOK SERVICE METHODS
 
-    @Autowired
-    public BookService(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public List<Book> getBooksByAuthor(String authorName){
+        return bookRepository.findBooksByAuthorFirstNameContaining(authorName);
     }
 
-    public List<Book> getBooksData(){
-
-        String sql = "SELECT * FROM books";
-
-        List<Book> books = jdbcTemplate.query(sql, (ResultSet rs, int rowNum)->{
-            Book book = new Book();
-            book.setId(rs.getInt("id"));
-            book.setAuthor(getAuthorByAuthorID(rs.getInt("author_id")));
-            book.setTitle(rs.getString("title"));
-            book.setPrice_old(rs.getString("price_old"));
-            book.setPrice(rs.getString("price"));
-            return book;
-        });
-        return new ArrayList<>(books);
+    public List<Book> getBooksByTitle(String title){
+        return bookRepository.findBooksByTitleContaining(title);
     }
 
-    private String getAuthorByAuthorID(int author_id) {
-        List<Author> authors = jdbcTemplate.query("select * from authors where authors.id =" +author_id, (ResultSet rs,
-            int rowNum)->{
-            Author author = new Author();
-            author.setId(rs.getInt("id"));
-            author.setFirst_name(rs.getString("first_name"));
-            author.setLast_name(rs.getString("last_name"));
-            return author;
-        });
-           return authors.get(0).toString();
-    }*/
+    public List<Book> getBooksWithPriceBetween(Integer min, Integer max){
+        return bookRepository.findBooksByPriceOldBetween(min, max);
+    }
+
+    public List<Book> getBooksWithPrice(Integer price){
+        return bookRepository.findBooksByPriceOldIs(price);
+    }
+
+    public List<Book> getBooksWithMaxPrice(){
+        return bookRepository.getBooksWithMaxDiscount();
+    }
+
+    public List<Book> getBestsellers(){
+        return bookRepository.getBestsellers();
+    }
+
+    public Page<Book> getPageOfRecommendedBooks(Integer offset, Integer limit){
+        Pageable nextPage = PageRequest.of(offset,limit);
+        return bookRepository.findAll(nextPage);
+    }
+
+    public Page<Book> getPageOfRecentBooks(Integer offset, Integer limit){
+        Pageable nextPage = PageRequest.of(offset,limit, Sort.by(Sort.Direction.DESC, "pubdate"));
+        return bookRepository.findAll(nextPage);
+    }
+
+    public Page<Book> getPageOfRecent(Integer offset, Integer limit, Date from, Date to){
+        Pageable nextPage = PageRequest.of(offset,limit, Sort.by(Sort.Direction.DESC, "pubdate"));
+        if (null == from){
+            return bookRepository.findAll(nextPage);
+        }else {
+            return bookRepository.findBookByPubdateBetween(from, to, nextPage);
+        }
+    }
+
+
+//    public Page<Book> getPageOfPopularBooks(Integer offset, Integer limit){
+//        Pageable nextPage = PageRequest.of(offset,limit);
+//        return bookRepository.findAll(nextPage);
+//    }
+
+    public Page<Book> getPageOfSearchResultBooks(String searchWord, Integer offset, Integer limit){
+        Pageable nextPage = PageRequest.of(offset, limit);
+        return bookRepository.findBookByTitleContaining(searchWord, nextPage);
+    }
 }
