@@ -17,6 +17,6 @@ public class Book2TagService {
     }
 
     public List<Book2Tag> getAllTag(){
-        return book2TagRepository.findAll();
+        return book2TagRepository.getTagByRating();
     }
 }

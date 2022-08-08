@@ -19,6 +19,9 @@ public class Book2Tag {
     @ApiModelProperty("Book2Tag description text")
     private String tagDescription;
 
+    @Column(nullable = true, name = "tag_rating")
+    private int tagRating;
+
     public Integer getId() {
         return id;
     }
@@ -41,5 +44,13 @@ public class Book2Tag {
                 "id=" + id +
                 ", tagDescription='" + tagDescription + '\'' +
                 '}';
+    }
+
+    public int getTagRating() {
+        return tagRating;
+    }
+
+    public void setTagRating(int tagRating) {
+        this.tagRating = tagRating;
     }
 }
