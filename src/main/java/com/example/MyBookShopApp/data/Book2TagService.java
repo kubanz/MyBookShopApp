@@ -19,4 +19,9 @@ public class Book2TagService {
     public List<Book2Tag> getAllTag(){
         return book2TagRepository.getTagByRating();
     }
+
+    public String getTagByID(Integer tagID){
+       Book2Tag book2Tag = book2TagRepository.getBook2TagByIdIs(tagID);
+        return book2Tag.getTagDescription();
+    }
 }

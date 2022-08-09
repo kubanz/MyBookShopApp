@@ -50,4 +50,8 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
             "\t\t\t\tgroup by b.book_id) b2 on b2.book_id = b.id\n" +
             "order by popularity desc", nativeQuery = true)
     Page<Book> getBooksByPopularity(Pageable nextPageable);
+
+    Page<Book> getBooksByTagIDIs(Integer tagID, Pageable newPageable);
+
+
 }

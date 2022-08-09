@@ -185,4 +185,20 @@ public class MainPageController {
     public List<Book2Tag> allBookTag(){
         return book2TagService.getAllTag();
     }
+
+    @GetMapping(value = "/books/tag/{tagID}", produces = MediaType.TEXT_HTML_VALUE)
+    public String getBookTagPage(@PathVariable(value = "tagID", required = false) String tagID, Model model) {
+        model.addAttribute("tagPage", bookService.getBooksForTagPage(tagID, 0, 20));
+        model.addAttribute("refreshID", tagID);
+        model.addAttribute("tagTitle", book2TagService.getTagByID(Integer.valueOf(tagID)));
+        return "/tags/index";
+    }
+
+    @GetMapping(value = "/books/tag/{tagID}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public BooksPageDto getBooksForPageTag(@PathVariable(value = "tagID", required = false) String tagID,/*@RequestParam("refreshid") String tagID,*/
+                                            @RequestParam("offset") Integer offset,
+                                            @RequestParam("limit") Integer limit){
+        return  new BooksPageDto(bookService.getBooksForTagPage(tagID, offset, limit).getContent());
+    }
 }

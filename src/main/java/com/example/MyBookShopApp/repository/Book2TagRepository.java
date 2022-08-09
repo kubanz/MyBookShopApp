@@ -30,4 +30,6 @@ public interface Book2TagRepository extends JpaRepository<Book2Tag, Integer> {
             "\tgroup by id, countbook, tag_description\n" +
             "\t) t1 ", nativeQuery = true)
      List<Book2Tag> getTagByRating();
+
+    Book2Tag getBook2TagByIdIs(Integer tagID);
 }
