@@ -1,11 +1,14 @@
 package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.data.*;
+import com.example.MyBookShopApp.data.genre.GenreEntity;
+import com.example.MyBookShopApp.repository.GenreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.DateFormat;
@@ -13,9 +16,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Controller
 public class MainPageController {
@@ -26,11 +27,14 @@ public class MainPageController {
 
     private final Book2TagService book2TagService;
 
+    private final GenreRepository genreRepository;
+
     @Autowired
-    public MainPageController(BookService bookService, BooksRatingAndPopularityService popularityService, Book2TagService book2TagService) {
+    public MainPageController(BookService bookService, BooksRatingAndPopularityService popularityService, Book2TagService book2TagService, GenreRepository genreRepository) {
         this.bookService = bookService;
         this.popularityService = popularityService;
         this.book2TagService = book2TagService;
+        this.genreRepository = genreRepository;
     }
 
     @ModelAttribute("recommendedBooks")
@@ -86,8 +90,32 @@ public class MainPageController {
     }
 
     @GetMapping("/books/genres")
-    public String genrePage(){
+    public String genrePage(Model model){
+        List<GenreEntity> genreEntities = getGenreWithoutDuplicates(0, new HashSet<>(), genreRepository.findAll());
+        model.addAttribute("parentGenreList", genreEntities);
+//        model.addAttribute("genreList", genreRepository.findAll());
+//        model.addAttribute("childGenreList", genreRepository.findAll());
         return "/genres/index";
+
+    }
+
+    private List<GenreEntity> getGenreWithoutDuplicates(int page, Set<Integer> visitedGenre, List<GenreEntity> genreEntities){
+        page++;
+        Iterator<GenreEntity> itr = genreEntities.iterator();
+
+        while (itr.hasNext()){
+            GenreEntity genreEntity = itr.next();
+            boolean addedToVisitedGenre = visitedGenre.add(genreEntity.getId());
+            if(!addedToVisitedGenre){
+                itr.remove();
+                if(page !=1)
+                    return genreEntities;
+            }
+            if(addedToVisitedGenre && !genreEntity.getChildren().isEmpty())
+                getGenreWithoutDuplicates(page, visitedGenre, genreEntity.getChildren());
+        }
+
+        return genreEntities;
     }
 
     @ModelAttribute("searchWordDto")
@@ -201,4 +229,6 @@ public class MainPageController {
                                             @RequestParam("limit") Integer limit){
         return  new BooksPageDto(bookService.getBooksForTagPage(tagID, offset, limit).getContent());
     }
+
+
 }
