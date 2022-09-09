@@ -2,13 +2,15 @@ package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.data.*;
 import com.example.MyBookShopApp.data.genre.GenreEntity;
+import com.example.MyBookShopApp.dtos.BooksPageDto;
+import com.example.MyBookShopApp.dtos.GenreDto;
+import com.example.MyBookShopApp.dtos.SearchWordDto;
 import com.example.MyBookShopApp.repository.GenreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.DateFormat;
@@ -29,17 +31,22 @@ public class MainPageController {
 
     private final GenreRepository genreRepository;
 
+    private final GenreService genreService;
+
     @Autowired
-    public MainPageController(BookService bookService, BooksRatingAndPopularityService popularityService, Book2TagService book2TagService, GenreRepository genreRepository) {
+    public MainPageController(BookService bookService, BooksRatingAndPopularityService popularityService,
+                              Book2TagService book2TagService, GenreRepository genreRepository,
+                              GenreService genreService) {
         this.bookService = bookService;
         this.popularityService = popularityService;
         this.book2TagService = book2TagService;
         this.genreRepository = genreRepository;
+        this.genreService = genreService;
     }
 
     @ModelAttribute("recommendedBooks")
-    public List<Book> recommendedBooks(){
-        return bookService.getPageOfRecommendedBooks(0,6).getContent();
+    public List<Book> recommendedBooks() {
+        return bookService.getPageOfRecommendedBooks(0, 6).getContent();
     }
 
 
@@ -49,69 +56,87 @@ public class MainPageController {
 //    }
 
     @ModelAttribute("popularBooks")
-    public List<Book> popularBooks(){
-        return popularityService.getPageOfPopularBooks(0,6).getContent();
+    public List<Book> popularBooks() {
+        return popularityService.getPageOfPopularBooks(0, 6).getContent();
     }
 
     @GetMapping("/")
-    public String mainPage(Model model){
+    public String mainPage(Model model) {
         return "index";
     }
 
 
     @GetMapping("/postponed")
-    public String postponedPage(){
+    public String postponedPage() {
         return "/postponed";
     }
 
     @GetMapping("/cart")
-    public String cartPage(){
+    public String cartPage() {
         return "/cart";
     }
 
     @GetMapping("/signin")
-    public String signinPage(){
+    public String signinPage() {
         return "/signin";
     }
 
     @GetMapping("/about")
-    public String aboutPage(){
+    public String aboutPage() {
         return "/about";
     }
 
     @GetMapping("/faq")
-    public String faqPage(){
+    public String faqPage() {
         return "/faq";
     }
 
     @GetMapping("/contacts")
-    public String contactsPage(){
+    public String contactsPage() {
         return "/contacts";
     }
 
     @GetMapping("/books/genres")
-    public String genrePage(Model model){
+    public String genrePage(Model model) {
         List<GenreEntity> genreEntities = getGenreWithoutDuplicates(0, new HashSet<>(), genreRepository.findAll());
-        model.addAttribute("parentGenreList", genreEntities);
+        model.addAttribute("parentGenreList", new GenreDto(genreEntities).getGenreEntities());
 //        model.addAttribute("genreList", genreRepository.findAll());
 //        model.addAttribute("childGenreList", genreRepository.findAll());
         return "/genres/index";
 
     }
 
-    private List<GenreEntity> getGenreWithoutDuplicates(int page, Set<Integer> visitedGenre, List<GenreEntity> genreEntities){
+    @GetMapping(value = "/books/genres/{id}", produces = MediaType.TEXT_HTML_VALUE)
+    public String getSlugPage(@PathVariable(value = "id") Integer id, Model model) {
+        model.addAttribute("slugUrl", genreRepository.getSlugUrl(id));
+        model.addAttribute("genreTitle", genreService.getGenreTitle(id));
+        model.addAttribute("getBookOfGenre", bookService.getBooksOfGenre(id, 0, 20));
+        model.addAttribute("refreshId", id);
+//        System.out.println(offset + " " + limit);
+        return "/genres/slug";
+    }
+
+    @GetMapping(value = "/books/genre/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public BooksPageDto getSlugPage(@RequestParam("offset") Integer offset,
+                                    @RequestParam("limit") Integer limit,
+                                    @PathVariable(value = "id") Integer id) {
+        return new BooksPageDto(bookService.getBooksOfGenre(id, offset, limit).getContent());
+    }
+
+    private List<GenreEntity> getGenreWithoutDuplicates(int page, Set<Integer> visitedGenre, List<GenreEntity> genreEntities) {
         page++;
         Iterator<GenreEntity> itr = genreEntities.iterator();
 
-        while (itr.hasNext()){
+        while (itr.hasNext()) {
             GenreEntity genreEntity = itr.next();
             boolean addedToVisitedGenre = visitedGenre.add(genreEntity.getId());
-            if(!addedToVisitedGenre){
+            if (!addedToVisitedGenre) {
                 itr.remove();
-                if(page !=1)
+                if (page != 1)
                     return genreEntities;
             }
-            if(addedToVisitedGenre && !genreEntity.getChildren().isEmpty())
+            if (addedToVisitedGenre && !genreEntity.getChildren().isEmpty())
                 getGenreWithoutDuplicates(page, visitedGenre, genreEntity.getChildren());
         }
 
@@ -119,12 +144,12 @@ public class MainPageController {
     }
 
     @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto(){
+    public SearchWordDto searchWordDto() {
         return new SearchWordDto();
     }
 
     @ModelAttribute("searchResults")
-    public List<Book> searchResults(){
+    public List<Book> searchResults() {
         return new ArrayList<>();
     }
 
@@ -161,8 +186,8 @@ public class MainPageController {
     }
 
     @ModelAttribute("recentBooks")
-    public List<Book> recentBooks(){
-        return bookService.getPageOfRecentBooks(0,6).getContent();
+    public List<Book> recentBooks() {
+        return bookService.getPageOfRecentBooks(0, 6).getContent();
     }
 
     @ModelAttribute("recentPageBooks")
@@ -171,8 +196,8 @@ public class MainPageController {
         Date startDate = Date.from(LocalDate.now().minusMonths(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         Date endDate = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
         Date to = new SimpleDateFormat("dd.MM.yyyy").parse(dateFormat.format(endDate));
-        Date from  =new SimpleDateFormat("dd.MM.yyyy").parse(dateFormat.format(startDate));
-        return bookService.getPageOfRecent(0,20,  from, to).getContent();
+        Date from = new SimpleDateFormat("dd.MM.yyyy").parse(dateFormat.format(startDate));
+        return bookService.getPageOfRecent(0, 20, from, to).getContent();
     }
 
     @GetMapping(value = "/books/recent", produces = MediaType.TEXT_HTML_VALUE)
@@ -184,17 +209,17 @@ public class MainPageController {
     @ResponseBody
     public BooksPageDto getRecentPage(@RequestParam("offset") Integer offset,
                                       @RequestParam("limit") Integer limit,
-                                      @RequestParam(value = "from", required = false) @DateTimeFormat(pattern = "dd.MM.yyyy")Date from,
-                                      @RequestParam(value = "to", required = false) @DateTimeFormat(pattern = "dd.MM.yyyy")Date to){
-            return new BooksPageDto(bookService.getPageOfRecent(offset, limit, from, to).getContent());
+                                      @RequestParam(value = "from", required = false) @DateTimeFormat(pattern = "dd.MM.yyyy") Date from,
+                                      @RequestParam(value = "to", required = false) @DateTimeFormat(pattern = "dd.MM.yyyy") Date to) {
+        return new BooksPageDto(bookService.getPageOfRecent(offset, limit, from, to).getContent());
 //        return new BooksPageDto(bookService.getPageOfRecentBooks(offset, limit).getContent());
 //        return new BooksPageDto(bookService.getPageOfRecent(offset, limit, from, to).getContent());
     }
 
 
     @ModelAttribute("popularPageBooks")
-    public List<Book> popularPageBooks(){
-          return popularityService.getPageOfPopularBooks(0,20).getContent();
+    public List<Book> popularPageBooks() {
+        return popularityService.getPageOfPopularBooks(0, 20).getContent();
     }
 
     @GetMapping(value = "/books/popular", produces = MediaType.TEXT_HTML_VALUE)
@@ -205,12 +230,12 @@ public class MainPageController {
     @GetMapping(value = "/books/popular", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public BooksPageDto getPopularPage(@RequestParam("offset") Integer offset,
-                                @RequestParam("limit") Integer limit) {
+                                       @RequestParam("limit") Integer limit) {
         return new BooksPageDto(popularityService.getPageOfPopularBooks(offset, limit).getContent());
     }
 
     @ModelAttribute("allBookTag")
-    public List<Book2Tag> allBookTag(){
+    public List<Book2Tag> allBookTag() {
         return book2TagService.getAllTag();
     }
 
@@ -225,9 +250,9 @@ public class MainPageController {
     @GetMapping(value = "/books/tag/{tagID}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public BooksPageDto getBooksForPageTag(@PathVariable(value = "tagID", required = false) String tagID,/*@RequestParam("refreshid") String tagID,*/
-                                            @RequestParam("offset") Integer offset,
-                                            @RequestParam("limit") Integer limit){
-        return  new BooksPageDto(bookService.getBooksForTagPage(tagID, offset, limit).getContent());
+                                           @RequestParam("offset") Integer offset,
+                                           @RequestParam("limit") Integer limit) {
+        return new BooksPageDto(bookService.getBooksForTagPage(tagID, offset, limit).getContent());
     }
 
 

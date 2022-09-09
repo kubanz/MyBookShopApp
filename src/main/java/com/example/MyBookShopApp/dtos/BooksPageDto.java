@@ -1,10 +1,13 @@
-package com.example.MyBookShopApp.data;
+package com.example.MyBookShopApp.dtos;
+
+import com.example.MyBookShopApp.data.Book;
 
 import java.util.List;
 
 public class BooksPageDto {
     private Integer count;
     private List<Book> books;
+
 
 
     public BooksPageDto(List<Book> books) {

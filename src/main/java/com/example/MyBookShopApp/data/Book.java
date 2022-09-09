@@ -61,6 +61,7 @@ public class Book {
     @Column(name = "tag_id")
     private Integer tagID;
 
+
     public Date getPubdate() {
         return pubdate;
     }

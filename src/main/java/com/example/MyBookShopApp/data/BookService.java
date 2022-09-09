@@ -73,6 +73,11 @@ public class BookService {
         }
     }
 
+    public Page<Book> getBooksOfGenre(int genreId, Integer offset, Integer limit){
+        Pageable nextPage = PageRequest.of(offset, limit);
+        return bookRepository.getBooksByGenre(genreId, nextPage);
+    }
+
 
 //    public Page<Book> getPageOfPopularBooks(Integer offset, Integer limit){
 //        Pageable nextPage = PageRequest.of(offset,limit);
