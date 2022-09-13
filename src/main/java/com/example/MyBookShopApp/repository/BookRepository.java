@@ -60,4 +60,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
             "where g.id = ?1", nativeQuery = true)
     Page<Book> getBooksByGenre(int genreId, Pageable nextPageable);
 
+    Page<Book> getBooksByAuthorIdIs(Integer id, Pageable nextPageable);
+
+    Integer countAllByAuthorIdIs(Integer id);
 }

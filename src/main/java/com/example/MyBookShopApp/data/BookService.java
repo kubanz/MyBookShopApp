@@ -93,4 +93,13 @@ public class BookService {
         Pageable nextPage = PageRequest.of(offset, limit);
         return bookRepository.getBooksByTagIDIs(Integer.valueOf(tagID), nextPage);
     }
+
+    public Page<Book> getBooksByAuthorID(Integer authorId, Integer offset, Integer limit){
+        Pageable nextPage = PageRequest.of(offset, limit);
+        return bookRepository.getBooksByAuthorIdIs(authorId, nextPage);
+    }
+
+    public Integer getBooksCountByAuthorID(Integer authorId){
+        return bookRepository.countAllByAuthorIdIs(authorId);
+    }
 }
