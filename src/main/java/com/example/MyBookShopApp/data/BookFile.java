@@ -1,5 +1,7 @@
 package com.example.MyBookShopApp.data;
 
+import com.example.MyBookShopApp.data.enums.BookFileType;
+
 import javax.persistence.*;
 
 @Entity
@@ -12,9 +14,24 @@ public class BookFile {
 
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String hash;
+
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String path;
-    private int type_id;
+
+    @Column(name = "type_id")
+    private int typeId;
+
+    @ManyToOne
+    @JoinColumn(name = "book_id", referencedColumnName = "id")
+    private Book book;
+
+    public BookFile() {
+
+    }
+
+    public String getBookFileExtensionString(){
+        return BookFileType.getExtensionStringByTypeID(typeId);
+    }
 
     public int getId() {
         return id;
@@ -40,19 +57,27 @@ public class BookFile {
         this.path = path;
     }
 
-    public int getType_id() {
-        return type_id;
+    public int getTypeId() {
+        return typeId;
     }
 
-    public void setType_id(int type_id) {
-        this.type_id = type_id;
+    public void setTypeId(int type_id) {
+        this.typeId = type_id;
     }
 
-    public BookFile(int id, String hash, String path, int type_id) {
+    public Book getBook() {
+        return book;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
+    }
+
+    public BookFile(int id, String hash, String path, int typeId) {
         this.id = id;
         this.hash = hash;
         this.path = path;
-        this.type_id = type_id;
+        this.typeId = typeId;
     }
 
 

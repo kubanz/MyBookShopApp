@@ -1,12 +1,17 @@
 package com.example.MyBookShopApp.data;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import javax.persistence.*;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "books")
@@ -27,6 +32,11 @@ public class Book {
     @JsonIgnore
     private Author author;
 
+    @JsonGetter("authors")
+    public String authorsFullName(){
+        return author.toString();
+    }
+
     @Column(name = "is_bestseller")
     @ApiModelProperty("if isBestseller = 1 so the book is considered to be bestseller and if 0 the book is not a " +
             "bestseller")
@@ -38,6 +48,9 @@ public class Book {
     private String title;
     @ApiModelProperty("book url")
     private String image;
+
+    @OneToMany(mappedBy = "book")
+    private List<BookFile> bookFileList = new ArrayList<>();
 
     @Column(columnDefinition = "TEXT")
     @ApiModelProperty("book description text")
@@ -61,6 +74,11 @@ public class Book {
     @Column(name = "tag_id")
     private Integer tagID;
 
+    @JsonProperty
+    public Integer discountPrice(){
+        Integer discountedPrice = priceOld - Math.toIntExact(Math.round(price * priceOld));
+        return discountedPrice;
+    }
 
     public Date getPubdate() {
         return pubdate;
@@ -142,13 +160,36 @@ public class Book {
         this.author = author;
     }
 
-    public int getPopularity() {
+    public int getPopularity()  {
+        popularity = 1;
         return popularity;
     }
 
     public void setPopularity(int popularity) {
         this.popularity = popularity;
     }
+
+    public List<BookFile> getBookFileList() {
+        return bookFileList;
+    }
+
+    public void setBookFileList(List<BookFile> bookFileList) {
+        this.bookFileList = bookFileList;
+    }
+
+//    public void setPopularity(Integer popularity) {
+//        this.popularity = popularity;
+//    }
+
+    public Integer getTagID() {
+        return tagID;
+    }
+
+    public void setTagID(Integer tagID) {
+        this.tagID = tagID;
+    }
+
+
 
     @Override
     public String toString() {
