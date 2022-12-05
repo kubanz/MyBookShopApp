@@ -2,7 +2,10 @@ package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.data.Book;
 import com.example.MyBookShopApp.data.ResourceStorage;
+import com.example.MyBookShopApp.dtos.RatingPageDto;
+import com.example.MyBookShopApp.repository.BookRatingRepository;
 import com.example.MyBookShopApp.repository.BookRepository;
+import com.example.MyBookShopApp.service.BookRatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -22,18 +25,26 @@ import java.util.logging.Logger;
 public class BooksController {
 
     private final BookRepository bookRepository;
+    private final BookRatingService bookRatingService;
     private final ResourceStorage storage;
 
     @Autowired
-    public BooksController(BookRepository bookRepository, ResourceStorage storage) {
+    public BooksController(BookRepository bookRepository, BookRatingService bookRatingService, ResourceStorage storage) {
         this.bookRepository = bookRepository;
+        this.bookRatingService = bookRatingService;
         this.storage = storage;
     }
+
+//    @ModelAttribute("rating")
+//    public RatingPageDto rateBook(){
+//        return bookRatingService.getBookRating(slug);
+//    }
 
     @GetMapping("/{slug}")
     public String bookPage(@PathVariable("slug") String slug, Model model) {
         Book book = bookRepository.findBookBySlug(slug);
         model.addAttribute("slugBook", book);
+        model.addAttribute("rating", bookRatingService.getBookRating(slug, 48));
         return "/books/slug";
     }
 
@@ -63,5 +74,12 @@ public class BooksController {
                 .contentType(mediaType)
                 .contentLength(data.length)
                 .body(new ByteArrayResource(data));
+    }
+
+    @PostMapping("/rateBook")
+    public String changeBookStarRating(@RequestParam("bookId")String slug, @RequestParam("value")String value){
+        bookRatingService.saveUpdateBookRate(slug, 48, Integer.parseInt(value));
+        System.out.println("value: " +value);
+        return "redirect:/books/"+slug;
     }
 }

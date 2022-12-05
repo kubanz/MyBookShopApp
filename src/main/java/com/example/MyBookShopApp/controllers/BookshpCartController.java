@@ -3,6 +3,7 @@ package com.example.MyBookShopApp.controllers;
 import com.example.MyBookShopApp.data.Book;
 import com.example.MyBookShopApp.dtos.BookDto;
 import com.example.MyBookShopApp.repository.BookRepository;
+import com.example.MyBookShopApp.service.BookRatingService;
 import com.example.MyBookShopApp.service.impl.ChangeBookStatusServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,20 +21,22 @@ import java.util.StringJoiner;
 @RequestMapping("/books")
 public class BookshpCartController {
 
+    private final BookRepository bookRepository;
+    private final BookRatingService bookRatingService;
 
     @ModelAttribute(name = "bookCart")
     public List<Book> bookCart() {
         return new ArrayList<>();
     }
 
-    private final BookRepository bookRepository;
 
     @Autowired
     private ChangeBookStatusServiceImpl changeBookStatusPostponedService;
 
     @Autowired
-    public BookshpCartController(BookRepository bookRepository) {
+    public BookshpCartController(BookRepository bookRepository, BookRatingService bookRatingService) {
         this.bookRepository = bookRepository;
+        this.bookRatingService = bookRatingService;
     }
 
     @GetMapping("/cart")
