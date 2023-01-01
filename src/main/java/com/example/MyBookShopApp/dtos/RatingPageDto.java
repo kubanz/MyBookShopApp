@@ -11,6 +11,7 @@ public class RatingPageDto {
     private long starFiveCount;
     private long rateBook;
 
+
     public RatingPageDto(long ratingCount, long rating, long starOneCount, long starTwoCount, long starThreeCount, long starFourCount, long starFiveCount, long rateBook) {
         this.ratingCount = ratingCount;
         this.rating = rating;

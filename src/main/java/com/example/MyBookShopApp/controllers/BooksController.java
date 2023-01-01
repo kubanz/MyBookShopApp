@@ -2,10 +2,9 @@ package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.data.Book;
 import com.example.MyBookShopApp.data.ResourceStorage;
-import com.example.MyBookShopApp.dtos.RatingPageDto;
-import com.example.MyBookShopApp.repository.BookRatingRepository;
 import com.example.MyBookShopApp.repository.BookRepository;
 import com.example.MyBookShopApp.service.BookRatingService;
+import com.example.MyBookShopApp.service.BookReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -26,27 +25,51 @@ public class BooksController {
 
     private final BookRepository bookRepository;
     private final BookRatingService bookRatingService;
+    private final BookReviewService bookReviewService;
     private final ResourceStorage storage;
 
     @Autowired
-    public BooksController(BookRepository bookRepository, BookRatingService bookRatingService, ResourceStorage storage) {
+    public BooksController(BookRepository bookRepository, BookRatingService bookRatingService, BookReviewService bookReviewService, ResourceStorage storage) {
         this.bookRepository = bookRepository;
         this.bookRatingService = bookRatingService;
+        this.bookReviewService = bookReviewService;
         this.storage = storage;
     }
 
-//    @ModelAttribute("rating")
-//    public RatingPageDto rateBook(){
-//        return bookRatingService.getBookRating(slug);
-//    }
+
+    @RequestMapping(value = "/bookReview", method = RequestMethod.POST)
+    @ResponseBody
+    public String bookReviewSave(@RequestParam(value = "bookId", required = false) String slug,
+                                 @RequestParam(value = "text", required = false) String text){
+        System.out.println(text + " " + slug);
+        bookReviewService.saveBookReview(text, slug);
+        return "redirect:/books/" + slug;
+    }
 
     @GetMapping("/{slug}")
     public String bookPage(@PathVariable("slug") String slug, Model model) {
+        int userId = 48;
+
+        boolean authStatus = true;
+
         Book book = bookRepository.findBookBySlug(slug);
         model.addAttribute("slugBook", book);
-        model.addAttribute("rating", bookRatingService.getBookRating(slug, 48));
-        return "/books/slug";
+//        model.addAttribute("rating", "rate");
+        model.addAttribute("rating", bookRatingService.getBookRating(slug, userId));
+//        model.addAttribute("bookReview", bookReviewService.getBookReview(slug));
+        model.addAttribute("bookReview", bookReviewService.getBookReview(slug));
+        if(authStatus){
+            return "/books/slugmy";
+        }
+        else {
+            return "/books/slug";
+        }
     }
+
+/*    @PostMapping("/bookReview")
+    public String bookReview(){
+
+    }*/
 
     @PostMapping("/{slug}/img/save")
     public String saveNewBookImage(@RequestParam("file")MultipartFile file,@PathVariable("slug")String slug) throws IOException {

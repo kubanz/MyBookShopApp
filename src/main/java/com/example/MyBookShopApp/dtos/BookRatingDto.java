@@ -1,11 +1,13 @@
 package com.example.MyBookShopApp.dtos;
 
+import com.example.MyBookShopApp.data.user.UserEntity;
+
 public class BookRatingDto {
 
     private Long id;
     private int rating;
     private BookDto book;
-    private int userID;
+    private UserEntityDto userID;
 
     public Long getId() {
         return id;
@@ -31,11 +33,11 @@ public class BookRatingDto {
         this.book = book;
     }
 
-    public int getUserID() {
+    public UserEntityDto getUserID() {
         return userID;
     }
 
-    public void setUserID(int userID) {
+    public void setUserID(UserEntityDto userID) {
         this.userID = userID;
     }
 }
