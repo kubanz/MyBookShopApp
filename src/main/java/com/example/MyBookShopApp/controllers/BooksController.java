@@ -50,7 +50,7 @@ public class BooksController {
     public String bookPage(@PathVariable("slug") String slug, Model model) {
         int userId = 48;
 
-        boolean authStatus = true;
+        boolean authStatus = false;
 
         Book book = bookRepository.findBookBySlug(slug);
         model.addAttribute("slugBook", book);
