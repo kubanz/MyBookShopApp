@@ -1,5 +1,8 @@
 package com.example.MyBookShopApp.data;
 
+import com.example.MyBookShopApp.data.user.UserEntity;
+import com.example.MyBookShopApp.dtos.UserEntityDto;
+
 import javax.persistence.*;
 
 @Entity
@@ -17,15 +20,16 @@ public class BookRating {
     @JoinColumn(name = "book_id", referencedColumnName = "id")
     private Book book;
 
-    @Column(name = "user_id")
-    private int userID;
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private UserEntity user;
 
     public BookRating(){};
 
-    public BookRating(int rating, Book book, int userID) {
+    public BookRating(int rating, Book book, UserEntity userID) {
         this.rating = rating;
         this.book = book;
-        this.userID = userID;
+        this.user = userID;
     }
 
     public Long getId() {
@@ -52,11 +56,14 @@ public class BookRating {
         this.book = book;
     }
 
-    public int getUserID() {
-        return userID;
+    public UserEntity getUser() {
+        return user;
     }
 
-    public void setUserID(int userID) {
-        this.userID = userID;
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
+
+
 }
+

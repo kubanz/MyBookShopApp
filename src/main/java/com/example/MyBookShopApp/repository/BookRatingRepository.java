@@ -10,6 +10,8 @@ public interface BookRatingRepository extends JpaRepository<BookRating, Integer>
 
     List<BookRating> findAllByBook_Slug(String bookSlug);
 
-    BookRating findAllByBook_SlugAndUserID(String bookSlug, Integer userId);
+//    BookRating findAllByBook_SlugAndUserID(String bookSlug, Integer userId);
 
+    BookRating findAllByBook_SlugAndAndUser_Id(String bookSlug, Integer userId);
+//    BookRating findAllByUser
 }

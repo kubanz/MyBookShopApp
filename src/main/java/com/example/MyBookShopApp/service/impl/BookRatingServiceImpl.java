@@ -2,11 +2,13 @@ package com.example.MyBookShopApp.service.impl;
 
 import com.example.MyBookShopApp.data.Book;
 import com.example.MyBookShopApp.data.BookRating;
+import com.example.MyBookShopApp.data.user.UserEntity;
 import com.example.MyBookShopApp.dtos.BookRatingDto;
 import com.example.MyBookShopApp.dtos.RatingPageDto;
 import com.example.MyBookShopApp.mappers.BookRatingMapper;
 import com.example.MyBookShopApp.repository.BookRatingRepository;
 import com.example.MyBookShopApp.repository.BookRepository;
+import com.example.MyBookShopApp.repository.UserEntityRepository;
 import com.example.MyBookShopApp.service.BookRatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,15 +23,18 @@ public class BookRatingServiceImpl implements BookRatingService {
 
     private final BookRatingRepository bookRatingRepository;
     private final BookRepository bookRepository;
+    private final UserEntityRepository userEntityRepository;
     private BookRatingMapper bookRatingMapper = BookRatingMapper.INSTANCE;
 
     @PersistenceContext
     private EntityManager em;
 
     @Autowired
-    public BookRatingServiceImpl(BookRatingRepository bookRatingRepository, BookRepository bookRepository) {
+    public BookRatingServiceImpl(BookRatingRepository bookRatingRepository, BookRepository bookRepository,
+                                 UserEntityRepository userEntityRepository) {
         this.bookRatingRepository = bookRatingRepository;
         this.bookRepository = bookRepository;
+        this.userEntityRepository = userEntityRepository;
     }
 
     @Override
@@ -43,7 +48,7 @@ public class BookRatingServiceImpl implements BookRatingService {
         long starThree = bookRatingDtos.stream().filter(b -> b.getRating() == 3).count();
         long starFour = bookRatingDtos.stream().filter(b -> b.getRating() == 4).count();
         long starFive = bookRatingDtos.stream().filter(b -> b.getRating() == 5).count();
-        BookRating rateBook = bookRatingRepository.findAllByBook_SlugAndUserID(slug, userId);
+        BookRating rateBook = bookRatingRepository.findAllByBook_SlugAndAndUser_Id(slug, userId);
         long rateUserStar;
         if(Objects.isNull(rateBook)){
             rateUserStar = 5; //default value
@@ -59,10 +64,11 @@ public class BookRatingServiceImpl implements BookRatingService {
     @Override
     public void saveUpdateBookRate(String slug, int userId, int value){
 
-        BookRating bookRating = bookRatingRepository.findAllByBook_SlugAndUserID(slug, userId);
+        BookRating bookRating = bookRatingRepository.findAllByBook_SlugAndAndUser_Id(slug, userId);
+        UserEntity userEntity = userEntityRepository.getById(userId);
         if(Objects.isNull(bookRating)) {
             Book book = bookRepository.findBookBySlug(slug);
-            BookRating rating = new BookRating(value, book, userId);
+            BookRating rating = new BookRating(value, book, userEntity);
             bookRatingRepository.save(rating);
         }else {
             bookRating.setRating(value);
