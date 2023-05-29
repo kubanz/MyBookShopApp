@@ -55,11 +55,6 @@ public class MainPageController {
         return "/cart";
     }
 
-    @GetMapping("/signin")
-    public String signinPage() {
-        return "/signin";
-    }
-
     @GetMapping("/about")
     public String aboutPage() {
         return "/about";

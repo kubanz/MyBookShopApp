@@ -50,7 +50,7 @@ public class BooksController {
     public String bookPage(@PathVariable("slug") String slug, Model model) {
         int userId = 48;
 
-        boolean authStatus = false;
+        boolean authStatus = true;
 
         Book book = bookRepository.findBookBySlug(slug);
         model.addAttribute("slugBook", book);
@@ -73,6 +73,7 @@ public class BooksController {
 
     @PostMapping("/{slug}/img/save")
     public String saveNewBookImage(@RequestParam("file")MultipartFile file,@PathVariable("slug")String slug) throws IOException {
+
         String savePath = storage.saveNewBookImage(file,slug);
         Book bookToUpdate = bookRepository.findBookBySlug(slug);
         bookToUpdate.setImage(savePath);
