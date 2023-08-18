@@ -3,11 +3,13 @@ package com.example.MyBookShopApp.security;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 
-public class BookstoreUserDetails implements UserDetails {
+public class BookstoreUserDetails implements UserDetails, OAuth2User {
 
     private final BookstoreUser bookstoreUser;
 
@@ -17,6 +19,11 @@ public class BookstoreUserDetails implements UserDetails {
 
     public BookstoreUser getBookstoreUser() {
         return bookstoreUser;
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return null;
     }
 
     @Override
@@ -52,5 +59,10 @@ public class BookstoreUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public String getName() {
+        return null;
     }
 }

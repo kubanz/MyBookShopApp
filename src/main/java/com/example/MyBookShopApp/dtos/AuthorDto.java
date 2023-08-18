@@ -11,18 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AuthorDto {
-
     private Integer id;
 
     private String photo;
     private String slug;
-
     private String firstName;
-
     private String lastName;
-
     private String text;
-
     private List<BookDto> booksList;
 
     @Override
@@ -85,4 +80,6 @@ public class AuthorDto {
 //    public void setBooksList(List<BookDto> booksList) {
 //        this.booksList = booksList;
 //    }
+
+
 }

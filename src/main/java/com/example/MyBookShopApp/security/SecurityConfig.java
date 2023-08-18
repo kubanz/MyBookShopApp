@@ -1,6 +1,8 @@
 package com.example.MyBookShopApp.security;
 
-import lombok.AllArgsConstructor;
+import com.example.MyBookShopApp.security.jwt.JWTRequestFilter;
+import com.example.MyBookShopApp.security.service.BookstoreUserDetailsService;
+import com.example.MyBookShopApp.security.service.LogoutHandlerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,30 +11,35 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final BookstoreUserDetailsService bookstoreUserDetailsService;
+    private final JWTRequestFilter filter;
+    private final LogoutHandlerService logoutHandler;
 
     @Autowired
-    public SecurityConfig(BookstoreUserDetailsService bookstoreUserDetailsService) {
+    public SecurityConfig(BookstoreUserDetailsService bookstoreUserDetailsService, JWTRequestFilter filter, LogoutHandlerService logoutHandler) {
         this.bookstoreUserDetailsService = bookstoreUserDetailsService;
+        this.filter = filter;
+        this.logoutHandler = logoutHandler;
     }
 
 
     @Bean
-    PasswordEncoder getPasswordEncoder(){
+    PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception{
+    public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
 
@@ -46,10 +53,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/my","/profile").hasRole("USER")
+                .antMatchers("/my", "/profile").authenticated()//.hasRole("USER")
                 .antMatchers("/**").permitAll()
                 .and().formLogin()
-                .loginPage("/signin").failureUrl("/signin");
+                .loginPage("/signin").failureUrl("/signin")
+                .and()
+                .logout()
+                .logoutUrl("/logout")
+                .addLogoutHandler(logoutHandler)
+                .logoutSuccessUrl("/signin")
+                .and().oauth2Login().and().oauth2Client();
+//                .deleteCookies("token");
+
+        //http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // сессии не создаются
+        http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
     }
+
+
 }
