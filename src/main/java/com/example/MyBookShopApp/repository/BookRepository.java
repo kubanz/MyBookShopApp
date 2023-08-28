@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface BookRepository extends JpaRepository<Book, Integer> {
-//    List<Book> findBooksByAuthorFirstName(String name);
+    List<Book> findBooksByAuthorFirstName(String name);
 
 //    @Query("from Book")
 //    List<Book> customFindAllBooks();

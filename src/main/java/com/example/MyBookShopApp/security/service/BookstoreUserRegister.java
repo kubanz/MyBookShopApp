@@ -31,7 +31,7 @@ public class BookstoreUserRegister {
         this.jwtUtil = jwtUtil;
     }
 
-    public void registerNewUser(RegistrationForm registrationForm) throws UserNotFoundException {
+    public BookstoreUser registerNewUser(RegistrationForm registrationForm) throws UserNotFoundException {
         if (bookstoreUserRepository.findBookstoreUserByEmail(registrationForm.getEmail()) == null) {
             BookstoreUser user = new BookstoreUser();
 
@@ -41,6 +41,7 @@ public class BookstoreUserRegister {
             user.setPassword(passwordEncoder.encode(registrationForm.getPass()));
 
             bookstoreUserRepository.save(user);
+            return user;
         }else {
             throw new UserNotFoundException("User already exists");
         }
