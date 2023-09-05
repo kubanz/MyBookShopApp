@@ -53,7 +53,6 @@ public class BookstoreUserRegister {
         Authentication authentication =
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(payload.getContact(),
                         payload.getCode()));
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
         ContactConfirmationResponse response = new ContactConfirmationResponse();
         response.setResult("true");
